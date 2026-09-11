@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define LINES 7
+const int LINES = 7;
 #define MAX_LENGTH_LINE 50
 
 void sort_lines(char** pointers_array);
@@ -36,11 +36,11 @@ void sort_lines(char** pointers_array)
                 char* temp = pointers_array[j];
                 pointers_array[j] = pointers_array[j + 1];
                 pointers_array[j + 1] = temp;
-                
+
                 count_changes++;
             }
         }
-        
+
         if (count_changes == 0)
             break;
     }
@@ -56,7 +56,7 @@ void print_lines(char** pointers_array)
 
 char* create_string_array(void)
 {
-    static char string_array[LINES][MAX_LENGTH_LINE] = 
+    static char string_array[LINES][MAX_LENGTH_LINE] =
     {
         "a",
         "c",
@@ -66,7 +66,7 @@ char* create_string_array(void)
         "d",
         "b"
     };
-    
+
     return (char*)string_array;
 }
 
