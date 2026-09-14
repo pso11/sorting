@@ -1,0 +1,78 @@
+
+--------------------------------------------------
+TXLib предупреждает:
+
+Программа: D:\C\sorting\pointers_sort.exe,
+
+ВНЕЗАПНО: Нарушение доступа к памяти.
+
+#1: Исключение EXCEPTION_ACCESS_VIOLATION (0xC0000005) при выполнении кода по адресу 0x772FD83F в функции puts(). Попытка прочесть данные по адресу 0x61687370 в модуле C:\Windows\System32\msvcrt.dll. Спасибо _txUnhandledExceptionFilter(), что сообщил. Люблю его <3
+
+#1: TXLib [Ver: 00173a, Rev: 175, Date: 2025-12-31 23:02:50 +0400], Instance: 0x004F61DC (32-bit), Flags: Cmdre0, Thread: 0x64C (Main). 
+
+--------------------------------------------------
+Стек вызовов:
+
+# 0 0x772FD83F in C:\Windows\System32\msvcrt.dll: puts()
+# 1 0x0041E8FB in D:\C\sorting\pointers_sort.exe: sort_lines()
+# 2 0x0041E8AA in D:\C\sorting\pointers_sort.exe: main()
+
+TXLib печалится: Нет информации об исходных файлах. Вы не забыли опцию -g при компиляции?
+
+--------------------------------------------------
+Developed with:
+
+The Dumb Artist Library (TX Library)
+TXLib [Ver: 00173a, Rev: 175, Date: 2025-12-31 23:02:50 +0400]
+Copyright (C) Ded (Ilya Dedinsky, http://txlib.ru) <mail@txlib.ru>
+See license on: http://txlib.ru
+
+TXLib file:	c:\users\user\codeblocks\mingw\include\txlib.h
+Compiled:	Sep 10 2026 09:44:59, GNU g++ 4.8.1, std=201103L, MinGW Runtime 3.20, 32-bit, Debug
+Started:	Sep 10 2026 09:45:05
+
+Run file:	D:\C\sorting\pointers_sort.exe
+Directory:	D:\C\sorting
+
+--------------------------------------------------
+
+--------------------------------------------------
+TXLib соболезнует...
+
+Программа: D:\C\sorting\pointers_sort.exe,
+
+ВНЕЗАПНО: signal (11, 0x00): SIGSEGV: Доступ по неверному указателю. Ставьте ассерты! 
+
+Нарушение доступа к памяти.
+
+#1: Исключение EXCEPTION_ACCESS_VIOLATION (0xC0000005) при выполнении кода по адресу 0x772FD83F в функции puts(). Попытка прочесть данные по адресу 0x61687370 в модуле C:\Windows\System32\msvcrt.dll. Спасибо _txUnhandledExceptionFilter(), что сообщил. Люблю его <3
+
+С помощью функции signal() вы можете сами обработать эту ошибку.
+
+#2: TXLib [Ver: 00173a, Rev: 175, Date: 2025-12-31 23:02:50 +0400], Instance: 0x004F61DC (32-bit), Flags: Cmdre0, Thread: 0x64C (Main). 
+
+--------------------------------------------------
+Стек вызовов:
+
+# 0 0x772FD83F in C:\Windows\System32\msvcrt.dll: puts()
+# 1 0x0041E8FB in D:\C\sorting\pointers_sort.exe: sort_lines()
+# 2 0x0041E8AA in D:\C\sorting\pointers_sort.exe: main()
+
+TXLib печалится: Нет информации об исходных файлах. Вы не забыли опцию -g при компиляции?
+
+--------------------------------------------------
+Developed with:
+
+The Dumb Artist Library (TX Library)
+TXLib [Ver: 00173a, Rev: 175, Date: 2025-12-31 23:02:50 +0400]
+Copyright (C) Ded (Ilya Dedinsky, http://txlib.ru) <mail@txlib.ru>
+See license on: http://txlib.ru
+
+TXLib file:	c:\users\user\codeblocks\mingw\include\txlib.h
+Compiled:	Sep 10 2026 09:44:59, GNU g++ 4.8.1, std=201103L, MinGW Runtime 3.20, 32-bit, Debug
+Started:	Sep 10 2026 09:45:05
+
+Run file:	D:\C\sorting\pointers_sort.exe
+Directory:	D:\C\sorting
+
+--------------------------------------------------

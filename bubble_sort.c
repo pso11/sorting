@@ -8,6 +8,8 @@
 void sort_lines(char* string_array);
 void print_lines(char* string_array);
 char* create_string_array(void);
+bool first_line_upper(char* line, char* next_line);
+void swap(char* line, char* next_line);
 
 int main(void)
 {
@@ -26,14 +28,11 @@ void sort_lines(char* string_array)
     {
         for (int j = 0; j < i; j++)
         {
-            if (strcmp(string_array + j * MAX_LENGTH_LINE, string_array + (j + 1) * MAX_LENGTH_LINE) > 0)
-            {
-                char temp[MAX_LENGTH_LINE] = "";
-                strncpy(temp, string_array + j * MAX_LENGTH_LINE, strlen(string_array + j * MAX_LENGTH_LINE) + 1);
-                strncpy(string_array + j * MAX_LENGTH_LINE, string_array + (j + 1) * MAX_LENGTH_LINE, 
-                        strlen(string_array + (j + 1) * MAX_LENGTH_LINE) + 1);
-                strncpy(string_array + (j + 1) * MAX_LENGTH_LINE, temp, strlen(temp) + 1);
-            }
+            char* line = string_array + j * MAX_LENGTH_LINE;
+            char* next_line = line + MAX_LENGTH_LINE;
+
+            if (first_line_upper(line, next_line))
+                swap(line, next_line);
         }
     }
 }
@@ -48,7 +47,7 @@ void print_lines(char* string_array)
 
 char* create_string_array(void)
 {
-    static char string_array[LINES][MAX_LENGTH_LINE] = 
+    static char string_array[LINES][MAX_LENGTH_LINE] =
     {
         "pshanichnaya arina",
         "pshanichnaya sofia",
@@ -58,4 +57,19 @@ char* create_string_array(void)
         "rostics"
     };
     return (char*)string_array;
+}
+
+bool first_line_upper(char* line, char* next_line)
+{
+    return strcmp(line, next_line) > 0;
+}
+
+void swap(char* line, char* next_line)
+{
+    for (int i = 0; i < MAX_LENGTH_LINE; i++)
+    {
+        char temp = *(line + i);
+        line[i] = next_line[i];
+        next_line[i] = temp;
+    }
 }
