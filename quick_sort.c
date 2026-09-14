@@ -10,7 +10,7 @@ void swap(int* numbers_array, int left_pointer, int right_pointer);
 
 int main(void)
 {
-    int numbers_array[] = {5, 5, 5, 5};
+    int numbers_array[] = {5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 7, -10};
 
     int numbers = sizeof(numbers_array) / sizeof(numbers_array[0]);
 
@@ -27,7 +27,7 @@ void sorting(int* numbers_array, int numbers)
     int left_pointer = 0;
     int reference_point = numbers_array[numbers / 2];
 
-    if (numbers <= 1) 
+    if (numbers <= 1)
         return;
 
     while (left_pointer <= right_pointer)
