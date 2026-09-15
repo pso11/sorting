@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <assert.h>
+#include <limits.h>
 
 // #define RED "\033[31m"
 // #define BLUE "\033[36m"
 
-void sorting(int* numbers_array, int numbers);
+void sorting(void* numbers_array, int numbers);
 void print_array(int* numbers_array, int numbers);
 void swap(int* numbers_array, int left_pointer, int right_pointer);
 
 int main(void)
 {
-    int numbers_array[] = {5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 7, -10};
-
+    int numbers_array[] = {1, 1};
     int numbers = sizeof(numbers_array) / sizeof(numbers_array[0]);
 
     sorting(numbers_array, numbers);
@@ -23,9 +23,9 @@ int main(void)
 
 void sorting(int* numbers_array, int numbers)
 {
-    int right_pointer = numbers - 1;
-    int left_pointer = 0;
-    int reference_point = numbers_array[numbers / 2];
+    size_t right_pointer = numbers - 1;
+    size_t left_pointer = 0;
+    size_t reference_point = numbers_array[numbers / 2];
 
     if (numbers <= 1)
         return;
@@ -41,7 +41,7 @@ void sorting(int* numbers_array, int numbers)
         while (numbers_array[right_pointer] >  reference_point)
         {
             right_pointer--;
-            assert(right_pointer > 0);
+            assert(right_pointer >= 0);
         }
 
         //assert(left_pointer < right_pointer);
@@ -49,8 +49,14 @@ void sorting(int* numbers_array, int numbers)
         if (left_pointer <= right_pointer)
         {
             swap(numbers_array, left_pointer, right_pointer);
-            left_pointer++;
-            right_pointer--;
+
+            if (left_pointer != numbers - 1)
+                left_pointer++;
+
+            if (right_pointer != 0)
+                right_pointer--;
+
+            assert(left_pointer != numbers);
         }
     }
 
