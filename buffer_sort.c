@@ -13,17 +13,18 @@
                                                                         \
         removal += sizeof(type); }
 
+//Putted in cycle "for"
 #define CONDITION_0                                                           \
         size_t k = 0; k < MAX_LENGTH_LINE / sizeof(unsigned long long); k++   \
 
 #define CONDITION_1                                                           \
-        MAX_LENGTH_LINE - removal >= 4                                        \
+        ((MAX_LENGTH_LINE - removal) >= 4)                                    \
 
 #define CONDITION_2                                                           \
-        MAX_LENGTH_LINE - removal >= 2                                        \
+        ((MAX_LENGTH_LINE - removal) >= 2)                                    \
 
 #define CONDITION_3                                                           \
-        MAX_LENGTH_LINE - removal != 0                                        \
+        ((MAX_LENGTH_LINE - removal) != 0)                                    \
 
 
 void sort_lines(char* string_array);
