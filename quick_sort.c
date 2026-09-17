@@ -9,41 +9,46 @@
 #define MAX_LEN_LINE 100
 
 int  compare_numbers(const void* data, const void* reference_data);
-int  compare_lines(const void* data, const void* reference_data);
+int  alphabetic_compare_lines(const void* data, const void* reference_data);
+int  rhymed_compare_lines(const void* data, const void* reference_data);
+
 void sorting(void* array, size_t number_elements, size_t type_size, int (*compare_function)(const void* data, const void* reference_data));
 void print_numbers_array(int* numbers_array, size_t number_elements);
 void print_lines_array(const char** lines_array, size_t line_elements);
 void swap(void* data, void* next_data, size_t type_size);
-void* creat_reference_point(void* array, size_t number_elements, size_t type_size);
+void* create_reference_point(void* array, size_t number_elements, size_t type_size);
 void free_reference_point(void* reference_pointer);
 void write_file(const char** text_array);
 const char** read_file(void);
 
 int main(void)
 {
-    int numbers_array[] = {1, 2, 3, 4, 4, 4, 4, 5, 1, 2, 3, 4, 5};
-    size_t number_elements = sizeof(numbers_array) / sizeof(numbers_array[0]);
-
-    const char* lines_array[] =
-    {
-        "mum",
-        "dad",
-        "low",
-        "buba",
-        "arinya"
-    };
-    size_t line_elements = sizeof(lines_array) / sizeof(lines_array[0]);
+    //int numbers_array[] = {1, 2, 3, 4, 4, 4, 4, 5, 1, 2, 3, 4, 5};
+    //size_t number_elements = sizeof(numbers_array) / sizeof(numbers_array[0]);
+//
+    //const char* lines_array[] =
+    //{
+    //    "mum",
+    //    "dad",
+    //    "low",
+    //    "buba",
+    //    "arinya"
+    //};
+    //size_t line_elements = sizeof(lines_array) / sizeof(lines_array[0]);
 
     const char** text_array = read_file();
 
-    sorting(numbers_array, number_elements, sizeof(int),   &compare_numbers);
-    sorting(lines_array,   line_elements,   sizeof(char*), &compare_lines);
-    sorting(text_array,    MAX_LINES,       sizeof(char*), &compare_lines);
+    //sorting(numbers_array, number_elements, sizeof(int),   &compare_numbers);
+    //sorting(lines_array,   line_elements,   sizeof(char*), &compare_lines);
+    sorting(text_array, MAX_LINES, sizeof(char*), &alphabetic_compare_lines);
 
-    print_numbers_array(numbers_array, number_elements);
+    //print_numbers_array(numbers_array, number_elements);
+    //print_lines_array  (lines_array, line_elements);
     print_lines_array  (text_array, MAX_LINES);
-    print_lines_array  (lines_array, line_elements);
 
+    write_file(text_array);
+
+    sorting(text_array, MAX_LINES, sizeof(char*), &rhymed_compare_lines);
     write_file(text_array);
 
     free(text_array);
@@ -58,7 +63,7 @@ void sorting(void* array, size_t number_elements, size_t type_size, int (*compar
     size_t right_idx = number_elements - 1;
     size_t left_idx = 0;
 
-    void* reference_pointer = creat_reference_point(array, number_elements, type_size);
+    void* reference_pointer = create_reference_point(array, number_elements, type_size);
 
     while (left_idx <= right_idx)
     {
@@ -130,50 +135,87 @@ int compare_numbers(const void* data, const void* reference_data)
     return (*(const int*)data - *(const int*)reference_data);
 }
 
-//int compare_lines(const void* data, const void* reference_data)
-//{
-//    const char* str1 = *(const char**)data;
-//    const char* str2 = *(const char**)reference_data;
-//
-//    int i_1 = 0;
-//    int i_2 = 0;
-//
-//    while (str1[i_1] != '\0' || str2[i_2] != '\0')
-//    {
-//        int c1 = tolower(str1[i_1]);
-//        int c2 = tolower(str2[i_2]);
-//
-//        if (!ispunct(c1) && !ispunct(c2))
-//        {
-//            if (c1 == c2){;}
-//            else if (c1 > c2)
-//                return 1;
-//            else if (c1 < c2)
-//                return -1;
-//            i_1++;
-//            i_2++;
-//        }
-//        else if (ispunct(c1) && !ispunct(c2))
-//            i_1++;
-//        else if (!ispunct(c1) && ispunct(c2))
-//            i_2++;
-//        else
-//        {
-//            i_1++;
-//            i_2++;
-//        }
-//
-//    }
-//    return 0;
-//}
-
-
-int compare_lines(const void* data, const void* reference_data)
+int alphabetic_compare_lines(const void* data, const void* reference_data)
 {
-    return strcmp(*(const char**)data, *(const char**)reference_data);
+    const char* str1 = *(const char**)data;
+    const char* str2 = *(const char**)reference_data;
+
+    int i_1 = 0;
+    int i_2 = 0;
+
+    while (str1[i_1] != '\0' || str2[i_2] != '\0')
+    {
+        int c1 = tolower(str1[i_1]);
+        int c2 = tolower(str2[i_2]);
+
+        if (!ispunct(c1) && !ispunct(c2))
+        {
+            if (c1 == c2){;}
+            else if (c1 > c2)
+                return 1;
+            else if (c1 < c2)
+                return -1;
+            i_1++;
+            i_2++;
+        }
+        else if (ispunct(c1) && !ispunct(c2))
+            i_1++;
+        else if (!ispunct(c1) && ispunct(c2))
+            i_2++;
+        else
+        {
+            i_1++;
+            i_2++;
+        }
+
+    }
+    return 0;
 }
 
-void* creat_reference_point(void* numbers_array, size_t number_elements, size_t type_size)
+int rhymed_compare_lines(const void* data, const void* reference_data)
+{
+    const char* str1 = *(const char**)data;
+    const char* str2 = *(const char**)reference_data;
+
+    int i_1 = strlen(str1);
+    int i_2 = strlen(str2);
+
+    while (i_1 >= 0 && i_2 >= 0)
+    {
+        int c1 = tolower(str1[i_1]);
+        int c2 = tolower(str2[i_2]);
+
+        if (!ispunct(c1) && !ispunct(c2))
+        {
+            if (c1 == c2){;}
+            else if (c1 > c2)
+                return 1;
+            else if (c1 < c2)
+                return -1;
+            i_1--;
+            i_2--;
+        }
+        else if (ispunct(c1) && !ispunct(c2))
+            i_1--;
+        else if (!ispunct(c1) && ispunct(c2))
+            i_2--;
+        else
+        {
+            i_1--;
+            i_2--;
+        }
+    }
+
+    return 0;
+}
+
+
+//int compare_lines(const void* data, const void* reference_data)
+//{
+//    return strcmp(*(const char**)data, *(const char**)reference_data);
+//}
+
+void* create_reference_point(void* numbers_array, size_t number_elements, size_t type_size)
 {
     void* reference_pointer = (void*)calloc(1, type_size);
     memcpy(reference_pointer, (unsigned char*)numbers_array + type_size * (number_elements / 2), type_size);
@@ -224,9 +266,10 @@ const char** read_file(void)
 
 void write_file(const char** text_array)
 {
-    FILE* file = fopen("mc_onegin.txt", "w");
+    FILE* file = fopen("mc_onegin.txt", "a");
     for (size_t i = 0; i < MAX_LINES; i++)
     {
         fprintf(file, "%s", text_array[i]);
     }
 }
+
