@@ -12,7 +12,7 @@ int  compare_numbers(const void* data, const void* reference_data);
 int  alphabetic_compare_lines(const void* data, const void* reference_data);
 int  rhymed_compare_lines(const void* data, const void* reference_data);
 
-void sorting(void* array, size_t number_elements, size_t type_size, int (*compare_function)(const void* data, const void* reference_data));
+void my_qsort(void* array, size_t number_elements, size_t type_size, int (*compare_function)(const void* data, const void* reference_data));
 void print_numbers_array(int* numbers_array, size_t number_elements);
 void print_lines_array(const char** lines_array, size_t line_elements);
 void swap(void* data, void* next_data, size_t type_size);
@@ -20,12 +20,12 @@ void* create_reference_point(void* array, size_t number_elements, size_t type_si
 void free_reference_point(void* reference_pointer);
 void write_file(const char** text_array);
 const char** read_file(void);
+const char** copy_array(const char** text_array);
 
 int main(void)
 {
     //int numbers_array[] = {1, 2, 3, 4, 4, 4, 4, 5, 1, 2, 3, 4, 5};
     //size_t number_elements = sizeof(numbers_array) / sizeof(numbers_array[0]);
-//
     //const char* lines_array[] =
     //{
     //    "mum",
@@ -37,26 +37,29 @@ int main(void)
     //size_t line_elements = sizeof(lines_array) / sizeof(lines_array[0]);
 
     const char** text_array = read_file();
+    const char** copied_text_array = copy_array(text_array);
 
-    //sorting(numbers_array, number_elements, sizeof(int),   &compare_numbers);
-    //sorting(lines_array,   line_elements,   sizeof(char*), &compare_lines);
-    sorting(text_array, MAX_LINES, sizeof(char*), &alphabetic_compare_lines);
+    //my_qsort(numbers_array, number_elements, sizeof(int),   &compare_numbers);
+    //my_qsort(lines_array,   line_elements,   sizeof(char*), &compare_lines);
+    my_qsort(text_array, MAX_LINES, sizeof(char*), &alphabetic_compare_lines);
 
     //print_numbers_array(numbers_array, number_elements);
     //print_lines_array  (lines_array, line_elements);
-    print_lines_array  (text_array, MAX_LINES);
+    //print_lines_array(text_array, MAX_LINES);
 
     write_file(text_array);
 
-    sorting(text_array, MAX_LINES, sizeof(char*), &rhymed_compare_lines);
+    my_qsort(text_array, MAX_LINES, sizeof(char*), &rhymed_compare_lines);
     write_file(text_array);
+
+    write_file(copied_text_array);
 
     free(text_array);
 
     return 0;
 }
 
-void sorting(void* array, size_t number_elements, size_t type_size, int (*compare_function)(const void* data, const void* reference_data))
+void my_qsort(void* array, size_t number_elements, size_t type_size, int (*compare_function)(const void* data, const void* reference_data))
 {
     if (number_elements <= 1) return;
 
@@ -93,10 +96,10 @@ void sorting(void* array, size_t number_elements, size_t type_size, int (*compar
     free_reference_point(reference_pointer);
 
     if (right_idx > 0)
-        sorting((unsigned char*)array, right_idx + 1, type_size, compare_function);
+        my_qsort((unsigned char*)array, right_idx + 1, type_size, compare_function);
 
     if ((number_elements - right_idx - 1) > 1)
-        sorting((unsigned char*)array + type_size * (1 + right_idx), number_elements - right_idx - 1, type_size, compare_function);
+        my_qsort((unsigned char*)array + type_size * (1 + right_idx), number_elements - right_idx - 1, type_size, compare_function);
 
 }
 
@@ -273,3 +276,16 @@ void write_file(const char** text_array)
     }
 }
 
+const char** copy_array(const char** text_array)
+{
+    char** copied_text_array = (char**)calloc(MAX_LINES, sizeof(char*));
+
+    for (int i = 0; i < MAX_LINES; i++)
+    {
+        copied_text_array[i] = (char*)calloc(strlen(text_array[i]) + 1, sizeof(char*));
+
+        strncpy(copied_text_array[i], text_array[i], strlen(text_array[i]) + 1);
+    }
+
+    return (const char**)copied_text_array;
+}
