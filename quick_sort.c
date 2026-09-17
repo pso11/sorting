@@ -5,7 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_LINES 7
+#define MAX_LINES 731
 #define MAX_LEN_LINE 100
 
 int  compare_numbers(const void* data, const void* reference_data);
@@ -13,48 +13,29 @@ int  alphabetic_compare_lines(const void* data, const void* reference_data);
 int  rhymed_compare_lines(const void* data, const void* reference_data);
 
 void my_qsort(void* array, size_t number_elements, size_t type_size, int (*compare_function)(const void* data, const void* reference_data));
-void print_numbers_array(int* numbers_array, size_t number_elements);
 void print_lines_array(const char** lines_array, size_t line_elements);
 void swap(void* data, void* next_data, size_t type_size);
 void* create_reference_point(void* array, size_t number_elements, size_t type_size);
 void free_reference_point(void* reference_pointer);
-void write_file(const char** text_array);
+void write_file(const char** lines_array);
 const char** read_file(void);
-const char** copy_array(const char** text_array);
+const char** copy_array(const char** lines_array);
+void  free_all_arrays(char** lines_array, char** copied_lines_array);
 
 int main(void)
 {
-    //int numbers_array[] = {1, 2, 3, 4, 4, 4, 4, 5, 1, 2, 3, 4, 5};
-    //size_t number_elements = sizeof(numbers_array) / sizeof(numbers_array[0]);
-    //const char* lines_array[] =
-    //{
-    //    "mum",
-    //    "dad",
-    //    "low",
-    //    "buba",
-    //    "arinya"
-    //};
-    //size_t line_elements = sizeof(lines_array) / sizeof(lines_array[0]);
+    const char** lines_array = read_file();
+    const char** copied_lines_array = copy_array(lines_array);
 
-    const char** text_array = read_file();
-    const char** copied_text_array = copy_array(text_array);
+    my_qsort(lines_array, MAX_LINES, sizeof(char*), &rhymed_compare_lines);
+    write_file(lines_array);
 
-    //my_qsort(numbers_array, number_elements, sizeof(int),   &compare_numbers);
-    //my_qsort(lines_array,   line_elements,   sizeof(char*), &compare_lines);
-    my_qsort(text_array, MAX_LINES, sizeof(char*), &alphabetic_compare_lines);
+    my_qsort(lines_array, MAX_LINES, sizeof(char*), &alphabetic_compare_lines);
+    write_file(lines_array);
 
-    //print_numbers_array(numbers_array, number_elements);
-    //print_lines_array  (lines_array, line_elements);
-    //print_lines_array(text_array, MAX_LINES);
+    write_file(copied_lines_array);
 
-    write_file(text_array);
-
-    my_qsort(text_array, MAX_LINES, sizeof(char*), &rhymed_compare_lines);
-    write_file(text_array);
-
-    write_file(copied_text_array);
-
-    free(text_array);
+    free_all_arrays((char**)lines_array, (char**)copied_lines_array);
 
     return 0;
 }
@@ -102,26 +83,6 @@ void my_qsort(void* array, size_t number_elements, size_t type_size, int (*compa
         my_qsort((unsigned char*)array + type_size * (1 + right_idx), number_elements - right_idx - 1, type_size, compare_function);
 
 }
-
-void print_numbers_array(int* numbers_array, size_t number_elements)
-{
-    for (size_t i = 0; i < number_elements; i++)
-    {
-        printf("%d ", *(numbers_array + i));
-    }
-    putchar('\n');
-}
-
-void print_lines_array(const char** lines_array, size_t line_elements)
-{
-    for (size_t i = 0; i < line_elements; i++)
-    {
-        printf("%s", *(lines_array + i));
-    }
-
-    putchar('\n');
-}
-
 
 void swap(void* data, void* next_data, size_t type_size)
 {
@@ -212,16 +173,10 @@ int rhymed_compare_lines(const void* data, const void* reference_data)
     return 0;
 }
 
-
-//int compare_lines(const void* data, const void* reference_data)
-//{
-//    return strcmp(*(const char**)data, *(const char**)reference_data);
-//}
-
-void* create_reference_point(void* numbers_array, size_t number_elements, size_t type_size)
+void* create_reference_point(void* array, size_t number_elements, size_t type_size)
 {
     void* reference_pointer = (void*)calloc(1, type_size);
-    memcpy(reference_pointer, (unsigned char*)numbers_array + type_size * (number_elements / 2), type_size);
+    memcpy(reference_pointer, (unsigned char*)array + type_size * (number_elements / 2), type_size);
     return reference_pointer;
 }
 
@@ -232,9 +187,9 @@ void free_reference_point(void* reference_pointer)
 
 const char** read_file(void)
 {
-    char** pointers_array = (char**)calloc(MAX_LINES, sizeof(char*));
+    char** lines_array = (char**)calloc(MAX_LINES, sizeof(char*));
 
-    FILE* file = fopen("onegin.txt", "r");
+    FILE* file = fopen("onegin_english.txt", "r");
     if (file == NULL)
     {
         printf("Can't open file");
@@ -255,37 +210,47 @@ const char** read_file(void)
         buffer[y] = '\n';
         buffer[y + 1] = '\0';
 
-        //if (fgets(buffer, MAX_LEN_LINE, file) == NULL)
-        //    break;
-
-        pointers_array[i] = (char*)calloc(strlen(buffer) + 1, sizeof(char));
-        strncpy(pointers_array[i], buffer, strlen(buffer) + 1);
+        lines_array[i] = (char*)calloc(strlen(buffer) + 1, sizeof(char));
+        strncpy(lines_array[i], buffer, strlen(buffer) + 1);
     }
 
     fclose(file);
 
-    return (const char**)pointers_array;
+    return (const char**)lines_array;
 }
 
-void write_file(const char** text_array)
+void write_file(const char** lines_array)
 {
     FILE* file = fopen("mc_onegin.txt", "a");
     for (size_t i = 0; i < MAX_LINES; i++)
     {
-        fprintf(file, "%s", text_array[i]);
+        fprintf(file, "%s", lines_array[i]);
     }
+    fprintf(file, "\n");
+    fclose(file);
 }
 
-const char** copy_array(const char** text_array)
+const char** copy_array(const char** lines_array)
 {
-    char** copied_text_array = (char**)calloc(MAX_LINES, sizeof(char*));
+    char** copied_lines_array = (char**)calloc(MAX_LINES, sizeof(char*));
 
     for (int i = 0; i < MAX_LINES; i++)
     {
-        copied_text_array[i] = (char*)calloc(strlen(text_array[i]) + 1, sizeof(char*));
+        copied_lines_array[i] = (char*)calloc(strlen(lines_array[i]) + 1, sizeof(char*));
 
-        strncpy(copied_text_array[i], text_array[i], strlen(text_array[i]) + 1);
+        strncpy(copied_lines_array[i], lines_array[i], strlen(lines_array[i]) + 1);
     }
 
-    return (const char**)copied_text_array;
+    return (const char**)copied_lines_array;
+}
+
+void  free_all_arrays(char** lines_array, char** copied_lines_array)
+{
+    for (int i = 0; i < MAX_LINES; i++)
+        free(lines_array[i]);
+    free(lines_array);
+
+    for (int i = 0; i < MAX_LINES; i++)
+        free(copied_lines_array[i]);
+    free(copied_lines_array);
 }
