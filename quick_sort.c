@@ -35,7 +35,6 @@ int main(void)
     size_t line_elements = sizeof(lines_array) / sizeof(lines_array[0]);
 
     const char** text_array = read_file();
-    write_file(text_array);
 
     sorting(numbers_array, number_elements, sizeof(int),   &compare_numbers);
     sorting(lines_array,   line_elements,   sizeof(char*), &compare_lines);
@@ -45,6 +44,7 @@ int main(void)
     print_lines_array  (text_array, MAX_LINES);
     print_lines_array  (lines_array, line_elements);
 
+    write_file(text_array);
 
     free(text_array);
 
@@ -130,6 +130,44 @@ int compare_numbers(const void* data, const void* reference_data)
     return (*(const int*)data - *(const int*)reference_data);
 }
 
+//int compare_lines(const void* data, const void* reference_data)
+//{
+//    const char* str1 = *(const char**)data;
+//    const char* str2 = *(const char**)reference_data;
+//
+//    int i_1 = 0;
+//    int i_2 = 0;
+//
+//    while (str1[i_1] != '\0' || str2[i_2] != '\0')
+//    {
+//        int c1 = tolower(str1[i_1]);
+//        int c2 = tolower(str2[i_2]);
+//
+//        if (!ispunct(c1) && !ispunct(c2))
+//        {
+//            if (c1 == c2){;}
+//            else if (c1 > c2)
+//                return 1;
+//            else if (c1 < c2)
+//                return -1;
+//            i_1++;
+//            i_2++;
+//        }
+//        else if (ispunct(c1) && !ispunct(c2))
+//            i_1++;
+//        else if (!ispunct(c1) && ispunct(c2))
+//            i_2++;
+//        else
+//        {
+//            i_1++;
+//            i_2++;
+//        }
+//
+//    }
+//    return 0;
+//}
+
+
 int compare_lines(const void* data, const void* reference_data)
 {
     return strcmp(*(const char**)data, *(const char**)reference_data);
@@ -175,8 +213,8 @@ const char** read_file(void)
         //if (fgets(buffer, MAX_LEN_LINE, file) == NULL)
         //    break;
 
-        pointers_array[i] = (char*)calloc(MAX_LEN_LINE, sizeof(char));
-        strncpy(pointers_array[i], buffer, MAX_LEN_LINE);
+        pointers_array[i] = (char*)calloc(strlen(buffer) + 1, sizeof(char));
+        strncpy(pointers_array[i], buffer, strlen(buffer) + 1);
     }
 
     fclose(file);
