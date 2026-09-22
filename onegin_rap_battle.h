@@ -23,7 +23,7 @@ struct text
 {
     char*  source_file;
     char*  destination_file;
-    size_t file_descriptor;
+    int file_descriptor;
     char*  text_buffer;
     size_t lines_number;
     struct line* array;
@@ -126,7 +126,7 @@ void file_work(int argc, char* argv[], struct text* onegin);
  * @return    Returns pointer on data buffer.
  * @note      On windows windows_number_elements includes \r befor \n as ending of line.
  */
-char* create_text_buffer(size_t windows_number_elements, size_t file_descriptor);
+char* create_text_buffer(size_t windows_number_elements, int file_descriptor);
 
 /**
  * @brief     Function that define numbers of elements in file.
@@ -134,7 +134,7 @@ char* create_text_buffer(size_t windows_number_elements, size_t file_descriptor)
  * @return    Returns number of elements in file.
  * @note      On windows number of elements includes \r befor \n as ending od line.
  */
-size_t define_file_size(size_t file_descriptor);
+size_t define_file_size(int file_descriptor);
 
 /**
  * @brief     Writes smth in file.
