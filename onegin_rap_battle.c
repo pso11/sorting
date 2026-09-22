@@ -5,24 +5,29 @@
 #include <string.h>
 #include <ctype.h>
 #include <sys\stat.h>
+#include <errno.h>
 
 #include "onegin_rap_battle.h"
 
-int main(void)
+int main(int argc, char* argv[])
 {
-    struct text* onegin = file_work();
-    assert(onegin -> text_buffer != NULL);
+    struct text onegin = {0};
+    file_work(argc, argv, &onegin);
+    assert(onegin.text_buffer != NULL);
+    //for (int i = 0; i < 734; i++)
+    //    printf("%d\n", onegin.array[i].length);
+    my_qsort(onegin.array, onegin.lines_number, sizeof(struct line), &rhymed_compare_lines);
+    fwrite_sorted(onegin.array, onegin.lines_number, onegin.destination_file);
 
-    my_qsort(onegin -> array, onegin -> lines_number, sizeof(struct line), &rhymed_compare_lines);
-    write_sorted_file(onegin -> array, onegin -> lines_number);
+    my_qsort(onegin.array, onegin.lines_number, sizeof(struct line), &alphabetic_compare_lines);
+    fwrite_sorted(onegin.array, onegin.lines_number, onegin.destination_file);
 
-    my_qsort(onegin -> array, onegin -> lines_number, sizeof(struct line), &alphabetic_compare_lines);
-    write_sorted_file(onegin -> array, onegin -> lines_number);
+    my_qsort(onegin.array, onegin.lines_number, sizeof(struct line), &compare_start);
+    fwrite_sorted(onegin.array, onegin.lines_number, onegin.destination_file);
 
-    my_qsort(onegin -> array, onegin -> lines_number, sizeof(struct line), &compare_start);
-    write_sorted_file(onegin -> array, onegin -> lines_number);
+    fwrite_buffer(onegin.destination_file, onegin.text_buffer, onegin.lines_number);
 
-    free_everything(onegin);
+    free_struct(&onegin);
 
     return 0;
 }
@@ -49,6 +54,9 @@ void my_qsort(void* array, size_t number_elements, size_t type_size, int (*compa
 
 void swap(void* data, void* next_data, size_t type_size)
 {
+    assert(data != NULL);
+    assert(next_data != NULL);
+
     for (size_t i = 0; i < type_size; i++)
     {
         char temp = *((char*)data + i);
@@ -59,6 +67,8 @@ void swap(void* data, void* next_data, size_t type_size)
 
 int alphabetic_compare_lines(const void* data, const void* reference_data)
 {
+    assert(data != NULL);
+
     const char* str1 = ((const struct line*)data) -> pointer;
     const char* str2 = ((const struct line*)reference_data) -> pointer;
 
@@ -72,11 +82,10 @@ int alphabetic_compare_lines(const void* data, const void* reference_data)
 
         if (!ispunct(c1) && !ispunct(c2))
         {
-            if (c1 == c2){;}
-            else if (c1 > c2)
-                return 1;
-            else if (c1 < c2)
-                return -1;
+            if (c1 == c2) {;}
+            else if (c1 > c2) return +1;
+            else if (c1 < c2) return -1;
+
             i_1++;
             i_2++;
         }
@@ -104,24 +113,27 @@ int compare_start(const void* data, const void* reference_data)
 
 int rhymed_compare_lines(const void* data, const void* reference_data)
 {
+    assert(data != NULL);
+
     const char* str1 = ((const struct line*)data) -> pointer;
     const char* str2 = ((const struct line*)reference_data) -> pointer;
 
     int i_1 = (int)((const struct line*)data) -> length;
     int i_2 = (int)((const struct line*)reference_data) -> length;
 
-    while (i_1 >= 0 && i_2 >= 0)
+    if (i_1 == 0 || i_2 == 0 )
+        return (i_1 - i_2);
+
+    while (i_1 > 0 && i_2 > 0)
     {
         size_t c1 = tolower(str1[i_1]);
         size_t c2 = tolower(str2[i_2]);
 
         if (!ispunct(c1) && !ispunct(c2))
         {
-            if (c1 == c2){;}
-            else if (c1 > c2)
-                return 1;
-            else if (c1 < c2)
-                return -1;
+            if (c1 == c2) {;}
+            else if (c1 > c2) return +1;
+            else if (c1 < c2) return -1;
             i_1--;
             i_2--;
         }
@@ -143,6 +155,9 @@ void* create_reference_point(void* array, size_t number_elements, size_t type_si
 {
     void* reference_data = (void*)calloc(1, type_size);
     memcpy(reference_data, (unsigned char*)array + type_size * (number_elements / 2), type_size);
+
+    assert(reference_data != NULL);
+
     return reference_data;
 }
 
@@ -157,12 +172,16 @@ size_t define_file_size(size_t file_descriptor)
     struct stat buff = {};
     fstat(file_descriptor, &buff);
 
+    assert(buff.st_size != 0);
+
     return buff.st_size;
 }
 
 char* create_text_buffer(size_t windows_number_elements, size_t file)
 {
     char* text_buffer = (char*)calloc(windows_number_elements + 1, sizeof(char));
+    assert(text_buffer != NULL);
+
     size_t real_number_elements = read(file, text_buffer, sizeof(char) * windows_number_elements);
     text_buffer[real_number_elements] = '\0';
 
@@ -183,9 +202,16 @@ size_t count_lines(const char* text_buffer)
     return lines_number;
 }
 
-void write_sorted_file(const struct line* array, size_t lines_number)
+void fwrite_sorted(const struct line* array, size_t lines_number, char* destination_file)
 {
-    FILE* file = fopen("mc_onegin.txt", "a");
+    errno = 0;
+    FILE* file = fopen(destination_file, "a");
+    if (errno != 0)
+    {
+        printf("Error code: %d -> %s", errno, strerror(errno));
+        exit(1);
+    }
+
     for (size_t i = 0; i < lines_number; i++)
     {
         fprintf(file, "%s", array[i].pointer);
@@ -200,26 +226,26 @@ void fill_struct_array(char* text_buffer, struct line* array)
 {
     array[0].pointer = text_buffer;
     char* temp = text_buffer;
-    size_t i = 0, j = 1;
+    size_t element = 0, line = 1;
 
-    for(; text_buffer[i] != '\0'; i++)
+    for(; text_buffer[element] != '\0'; element++)
     {
-        if (text_buffer[i] == '\n')
+        if (text_buffer[element] == '\n')
         {
-            text_buffer[i] = '\0';
-            if (text_buffer[i + 1] != '\0')
-                array[j].pointer = text_buffer + i + 1;
-            array[j - 1].length = (size_t)(text_buffer + i - temp);
-            temp = text_buffer + i + 1;
-            j++;
+            text_buffer[element] = '\0';
+            if (text_buffer[element + 1] != '\0')
+                array[line].pointer = text_buffer + element + 1;
+            array[line - 1].length = (size_t)(text_buffer + element - temp);
+            temp = text_buffer + element + 1;
+            line++;
         }
     }
 
-    if (text_buffer[i - 1] != '\0')
-        array[j - 1].length = (size_t)(text_buffer + i - temp);
+    if (text_buffer[element - 1] != '\0')
+        array[line - 1].length = (size_t)(text_buffer + element - temp);
 }
 
-void  free_everything(struct text* onegin)
+void  free_struct(struct text* onegin)
 {
     free(onegin -> text_buffer);
     free(onegin -> array);
@@ -267,16 +293,21 @@ void partition(void* array, size_t number_elements, size_t* right_idx, size_t* l
     }
 }
 
-struct text* file_work(void)
+void file_work(int argc, char* argv[], struct text* onegin)
 {
-    struct text* onegin = (text*)calloc(1, sizeof(text));
-    onegin -> file_descriptor = open("onegin_english.txt", O_RDONLY);
+    errno = 0;
+    assert(argc == 3);
 
-    if (onegin -> file_descriptor == 0)
+    onegin -> source_file = argv[1];
+    onegin -> destination_file = argv[2];
+    free_destination_file(onegin -> destination_file);
+
+    onegin -> file_descriptor = open(onegin -> source_file, O_RDONLY);
+
+    if (errno != 0)
     {
-        printf("Can't open file");
-        free(onegin);
-        return 0;
+        printf("Error code: <%d> -> <%s>", errno, strerror(errno));
+        exit(1);
     }
 
     size_t windows_number_elements = define_file_size(onegin -> file_descriptor);
@@ -290,6 +321,38 @@ struct text* file_work(void)
     onegin -> array = (struct line*)calloc(onegin -> lines_number, sizeof(line));
 
     fill_struct_array(onegin -> text_buffer, (struct line*)(onegin -> array));
+}
 
-    return onegin;
+void free_destination_file(char* destination_file)
+{
+    errno = 0;
+    FILE* ptr = fopen(destination_file, "w");
+    if (errno != 0)
+    {
+        printf("Error code: <%d> -> <%s> ", errno, strerror(errno));
+        exit(1);
+    }
+
+    fclose(ptr);
+    if (errno != 0)
+    {
+        printf("Error code: <%d> -> <%s> ", errno, strerror(errno));
+        exit(1);
+    }
+}
+
+void fwrite_buffer(char* destination_file, char* text_buffer, size_t lines_number)
+{
+    FILE* file = fopen(destination_file, "a");
+
+    const char* pointer_element_array = text_buffer;
+    for (size_t i = 0; i < lines_number; i++)
+    {
+        fprintf(file, "%s", pointer_element_array);
+        fputc('\n', file);
+        pointer_element_array = strchr(pointer_element_array, '\0');
+        pointer_element_array++;
+    }
+
+    fclose(file);
 }
