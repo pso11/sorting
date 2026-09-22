@@ -19,10 +19,16 @@ void swap(int* numbers_array, int left_pointer, int right_pointer);
 
 int main(void)
 {
-    int numbers_array[] = {3, 2, 1, 10, 9, -5, 4, -10, 0};
+    int numbers_array[] = {3, 2, 1, 10, 9, -5, 4, -10, 0, 0, 0, 0, 0};
     size_t numbers = sizeof(numbers_array) / sizeof(numbers_array[0]);
 
     sorting(numbers_array, numbers);
+    for (size_t i = 0; i < numbers; i++)
+    {
+        printf("%10d   ", *(numbers_array + i));
+        printf(WHITE);
+    }
+
 
     return 0;
 }
@@ -82,6 +88,7 @@ void sorting(int* numbers_array, size_t numbers)
 void print_array(int* numbers_array, size_t numbers, size_t right_pointer, size_t left_pointer, size_t reference_point)
 {
     printf(WHITE);
+    printf("Array:   ");
     for (size_t i = 0; i < numbers; i++)
     {
         if (numbers_array[i] == numbers_array[right_pointer])
@@ -94,12 +101,25 @@ void print_array(int* numbers_array, size_t numbers, size_t right_pointer, size_
             if (numbers_array[i] == numbers_array[right_pointer] || numbers_array[i] == numbers_array[left_pointer])
                 printf(RED);
         }
-        printf("%d ", *(numbers_array + i));
+        printf("%10d   ", *(numbers_array + i));
         printf(WHITE);
     }
-    printf(WHITE"\nright pointer = <%d> left pointer = <%d> reference_point = <%d>", numbers_array[right_pointer], numbers_array[left_pointer], numbers_array[reference_point]);
     putchar('\n');
-    printf(WHITE);
+    printf("Index:   ");
+    for (size_t i = 0; i < numbers; i++)
+    {
+        printf(DARK_BLUE"%10d   ", i);
+        printf(WHITE);
+    }
+    putchar('\n');
+    printf("Pointer: ");
+    for (size_t i = 0; i < numbers; i++)
+    {
+        printf("%10p   ", numbers_array + i);
+        printf(WHITE);
+    }
+    putchar('\n');
+    printf(WHITE"\nNumber of elemetnts = <%d>\nright pointer = <%d> left pointer = <%d> reference_point = <%d>\n" WHITE, numbers, numbers_array[right_pointer], numbers_array[left_pointer], numbers_array[reference_point]);
 }
 
 void swap(int* numbers_array, int left_pointer, int right_pointer)
