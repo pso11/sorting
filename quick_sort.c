@@ -14,7 +14,8 @@
 #define RESET "\033[0m"
 
 void sorting(int* numbers_array, size_t numbers);
-void print_array(int* numbers_array, size_t numbers, size_t right_pointer, size_t left_pointer, size_t reference_point);
+void print_debug(int* numbers_array, size_t numbers, size_t right_pointer, size_t left_pointer, size_t reference_point);
+void print_numbers_array(int* numbers_array, size_t numbers);
 void swap(int* numbers_array, int left_pointer, int right_pointer);
 
 int main(void)
@@ -23,12 +24,8 @@ int main(void)
     size_t numbers = sizeof(numbers_array) / sizeof(numbers_array[0]);
 
     sorting(numbers_array, numbers);
-    for (size_t i = 0; i < numbers; i++)
-    {
-        printf("%10d   ", *(numbers_array + i));
-        printf(WHITE);
-    }
 
+    print_numbers_array(numbers_array, numbers);
 
     return 0;
 }
@@ -44,7 +41,7 @@ void sorting(int* numbers_array, size_t numbers)
 
     while (left_pointer <= right_pointer)
     {
-        print_array(numbers_array, numbers, right_pointer, left_pointer, reference_point);
+        print_debug(numbers_array, numbers, right_pointer, left_pointer, reference_point);
         getchar();
 
         while (numbers_array[left_pointer] < reference_point)
@@ -85,7 +82,7 @@ void sorting(int* numbers_array, size_t numbers)
 
 }
 
-void print_array(int* numbers_array, size_t numbers, size_t right_pointer, size_t left_pointer, size_t reference_point)
+void print_debug(int* numbers_array, size_t numbers, size_t right_pointer, size_t left_pointer, size_t reference_point)
 {
     printf(WHITE);
     printf("Array:   ");
@@ -127,4 +124,13 @@ void swap(int* numbers_array, int left_pointer, int right_pointer)
     int temp = *(numbers_array + left_pointer);
     *(numbers_array + left_pointer) = *(numbers_array + right_pointer);
     *(numbers_array + right_pointer) = temp;
+}
+
+void print_numbers_array(int* numbers_array, size_t numbers)
+{
+    for (size_t i = 0; i < numbers; i++)
+    {
+        printf("%10d   ", *(numbers_array + i));
+        printf(WHITE);
+    }
 }
